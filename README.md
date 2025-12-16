@@ -126,18 +126,18 @@ The final model was:
 
 Diabetes Prediction_Flask/
 │
-├── app.py
-├── model.py
-├── diabetes_catBoost_model.pkl   👈 final model
-├── feature_labels.json
-├── README.md
-├── requirements.txt
-├── Dockerfile
+├─ app.py
+├─ model.py
+├─ diabetes_catBoost_model.pkl   👈 final model
+├─ feature_labels.json
+├─ README.md
+├─ requirements.txt
+├─ Dockerfile
 │
-├── templates/
+├─ templates/
 │   └── form.html & result.html
 │
-└── notebooks/
+└─ notebooks/
     └── Diabetes_EDA_Notebook.ipynb
 
 
