@@ -1,45 +1,166 @@
-# Diabetes Prediction using CDC BRFSS Data
+# 🩺 Diabetes Risk Prediction using CDC BRFSS Data
 
-## Overview
-This project builds a machine learning pipeline to predict diabetes risk using the CDC BRFSS 2015 dataset.  
-The goal is to develop a screening-oriented model that maximizes recall while maintaining reasonable precision.
+> End-to-end Machine Learning project for predicting diabetes risk using public health survey data, with a focus on **real-world evaluation, interpretability, and deployment readiness**.
 
-## Dataset
-- Source: CDC Behavioral Risk Factor Surveillance System (BRFSS)
-- Target: `Diabetes_binary`
-- Class distribution: Imbalanced (~14% diabetic)
+---
 
-## Methodology
-- Exploratory Data Analysis (EDA)
-- Feature preprocessing and engineering
-- Train–test split with:
-  - Balanced training set
-  - Real-world (unbalanced) test set
-- Model comparison across:
-  - Logistic Regression
-  - Random Forest
-  - Gradient Boosting
-  - XGBoost
-  - LightGBM
-  - CatBoost
-- Evaluation using ROC AUC, PR AUC, and Recall
-- Threshold optimization for screening use case
+## 📌 Project Overview
 
-## Results
-- Best model: **CatBoost**
-- ROC AUC: 0.827
-- PR AUC: 0.422
-- Recall (Diabetes): 0.80 at threshold 0.495
+Diabetes is a major public health challenge where **early risk identification** can significantly improve outcomes.  
+This project builds a **screening-oriented machine learning model** using the **CDC Behavioral Risk Factor Surveillance System (BRFSS) 2015 dataset** to predict the likelihood of diabetes based on demographic, lifestyle, and health indicators.
 
-## Files
-- `diabetes_project.ipynb` — full analysis notebook
-- `diabetes_catboost_model.pkl` — trained model + threshold
-- `README.md` — project summary
-- Flask App
+The emphasis is not just on model accuracy, but on:
+- Handling **class imbalance correctly**
+- Choosing **clinically meaningful evaluation metrics**
+- Making **transparent, defensible modeling decisions**
+- Deploying the model via a **Flask web application**
 
-## Key Takeaway
-Balancing only the training data while preserving real-world test distributions enables realistic evaluation.  
-Boosting models offer incremental improvements over strong linear baselines in epidemiological datasets.
+---
 
-## Author
-Rishitha Raj
+## 📊 Dataset Description
+
+- **Source**: CDC BRFSS 2015
+- **Records**: ~253,000 survey responses
+- **Target variable**: `Diabetes_binary`
+  - `1` → Diabetic
+  - `0` → Non-diabetic
+- **Original class distribution**:
+  - ~14% diabetic
+  - ~86% non-diabetic (highly imbalanced)
+
+### Feature Categories
+- Health conditions (HighBP, HighChol, Stroke, etc.)
+- Lifestyle indicators (Smoking, Alcohol, Physical activity)
+- Self-reported health status (General, Physical, Mental health)
+- Demographics (Age group, Sex, Education, Income)
+
+---
+
+## 🧠 Key Design Decisions
+
+### 1️⃣ Proper Handling of Class Imbalance
+- **Training set** was deliberately **balanced (50/50)** to help models learn minority-class patterns.
+- **Test set** was kept **unbalanced (~86/14)** to reflect real-world prevalence.
+
+This prevents data leakage and avoids overly optimistic evaluation.
+
+---
+
+### 2️⃣ Meaningful Evaluation Metrics
+Accuracy was intentionally **not** used as the primary metric.
+
+Instead, evaluation focused on:
+- **ROC AUC** → Overall ranking ability
+- **PR AUC** → Minority-class performance
+- **Recall (Diabetes)** → Critical for screening use cases
+
+---
+
+## 🔬 Modeling Approach
+
+### Baseline Model
+- **Logistic Regression**
+- Served as a strong and interpretable benchmark
+
+### Models Compared
+- Random Forest
+- Gradient Boosting
+- XGBoost
+- LightGBM
+- **CatBoost (final model)**
+
+All models were trained on the balanced training set and evaluated on the unbalanced test set.
+
+---
+
+## 🏆 Model Performance Summary
+
+| Model | ROC AUC | PR AUC | Recall (Diabetes) | Notes |
+|------|--------|--------|------------------|------|
+| Logistic Regression | 0.819 | 0.392 | 0.763 | Strong linear baseline |
+| Random Forest | 0.808 | 0.380 | 0.775 | Underperformed |
+| Gradient Boosting | 0.826 | 0.419 | 0.789 | Competitive |
+| LightGBM | 0.826 | 0.419 | 0.794 | Fast & stable |
+| XGBoost | 0.827 | 0.421 | 0.792 | Strong ensemble |
+| **CatBoost (Final)** | **0.827** | **0.422** | **0.795** | **Best overall** |
+
+---
+
+## 🎯 Threshold Optimization
+
+Rather than using the default threshold of `0.5`, the decision threshold was explicitly optimized.
+
+### Final Operating Point
+- **Threshold**: `0.495`
+- **Recall (Diabetes)**: **80%**
+- **Precision**: 30%
+
+This operating point is suitable for **screening**, where missing diabetic cases is more costly than generating false positives.
+
+---
+
+## 🔍 Key Insights
+
+- Logistic regression already performed strongly, indicating **strong linear separability** in the data.
+- Boosting models provided **incremental improvements**, primarily in ranking quality rather than thresholded classification.
+- Feature importance analysis showed that **Age, BMI, General Health, Blood Pressure, and Cholesterol** were dominant predictors, aligning with medical understanding.
+
+---
+
+## 🌐 Deployment (Flask Application)
+
+The final model was:
+- Trained **offline** in a notebook
+- Serialized as a **`.pkl` artifact**
+- Loaded into a **Flask web application** for inference only
+
+### Deployment Best Practices
+- No retraining inside the application
+- Probability-based predictions
+- Explicit thresholding
+- Clear separation between training and inference
+
+---
+
+## 📁 Project Structure
+
+Diabetes Prediction_Flask/
+├── app.py                      # Flask application
+├── model.py                    # Inference helper
+├── diabetes_catboost_model.pkl # Final trained model + threshold
+├── feature_labels.json         # Human-friendly feature names
+├── templates/
+│   └── form.html
+│   └── result.html
+├── diabetes_project.ipynb      # Full analysis notebook
+└── README.md                   # Project documentation
+
+
+
+---
+
+## ✅ Key Takeaways
+
+- Proper data splitting and evaluation are more important than model complexity.
+- Balanced training with realistic testing leads to trustworthy metrics.
+- Threshold tuning transforms a model from academic to practical.
+- Honest evaluation and interpretability are critical in healthcare ML.
+
+---
+
+## 🚀 Future Enhancements
+
+- Probability calibration
+- Cost-sensitive optimization
+- SHAP-based explanations in the UI
+- Cloud deployment (Render / Railway)
+- Integration with longitudinal health data
+
+---
+
+## 👩‍💻 Author
+
+**Rishitha Raj**  
+Aspiring Data Scientist  
+Background in Engineering, Project Management & UX  
+Focused on interpretable, real-world machine learning systems
