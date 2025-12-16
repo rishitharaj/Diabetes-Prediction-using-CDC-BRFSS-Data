@@ -8,7 +8,7 @@ warnings.filterwarnings("ignore")
 
 
 # === CONFIG ===
-CSV_PATH = 'diabetes_binary_health_indicators_BRFSS2015.csv'
+# CSV_PATH = 'diabetes_binary_health_indicators_BRFSS2015.csv'
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, "diabetes_catboost_model.pkl")
 LABELS_PATH = os.path.join(BASE_DIR, "feature_labels.json")

@@ -135,7 +135,7 @@ Diabetes Prediction_Flask/
 ├── Dockerfile
 │
 ├── templates/
-│   └── form.html & respons.html
+│   └── form.html & result.html
 │
 └── notebooks/
     └── Diabetes_EDA_Notebook.ipynb
