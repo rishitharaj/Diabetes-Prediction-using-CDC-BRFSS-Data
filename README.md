@@ -125,15 +125,20 @@ The final model was:
 ## 📁 Project Structure
 
 Diabetes Prediction_Flask/
-├── app.py                      # Flask application
-├── model.py                    # Inference helper
-├── diabetes_catboost_model.pkl # Final trained model + threshold
-├── feature_labels.json         # Human-friendly feature names
+│
+├── app.py
+├── model.py
+├── diabetes_catBoost_model.pkl   👈 final model
+├── feature_labels.json
+├── README.md
+├── requirements.txt
+├── Dockerfile
+│
 ├── templates/
-│   └── form.html
-│   └── result.html
-├── diabetes_project.ipynb      # Full analysis notebook
-└── README.md                   # Project documentation
+│   └── form.html & respons.html
+│
+└── notebooks/
+    └── Diabetes_EDA_Notebook.ipynb
 
 
 
