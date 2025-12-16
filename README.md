@@ -151,15 +151,9 @@ Diabetes Prediction_Flask/
 - Threshold tuning transforms a model from academic to practical.
 - Honest evaluation and interpretability are critical in healthcare ML.
 
----
+## 🧩 Results
 
-## 🚀 Future Enhancements
-
-- Probability calibration
-- Cost-sensitive optimization
-- SHAP-based explanations in the UI
-- Cloud deployment (Render / Railway)
-- Integration with longitudinal health data
+<img width="3600" height="2598" alt="Diabetics Prediction Positive" src="https://github.com/user-attachments/assets/751ea894-d3ae-4614-bcc7-c5ec5dcd67a8" />
 
 ---
 
