@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Diabetes Prediction</title>
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body { padding: 2rem; background:#fafafa; }
+    h1 { font-weight:700; margin-bottom:1rem; }
+    .form-section {
+      background: #fff;
+      border-radius: .5rem;
+      padding:1.25rem;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+    }
+    .field-help { font-size: .85rem; color:#6c757d; }
+    footer { margin-top:2rem; }
+  </style>
+</head>
+
+<script>
+  function resetForm() {
+    const form = document.querySelector("form");
+    form.reset();
+
+    // Clear any custom / dynamically set fields
+    form.querySelectorAll("input, select, textarea").forEach(el => {
+      if (el.type !== "checkbox" && el.type !== "radio") {
+        el.value = "";
+      }
+    });
+  }
+</script>
+
+<body>
+  <div class="container">
+    <h1 class="display-6">Diabetes Prediction</h1>
+
+    <!-- prediction banner -->
+    {% if prediction_text %}
+      <div class="alert alert-info" role="alert">
+        <strong>Prediction:</strong> {{ prediction_text }}
+      </div>
+    {% endif %}
+
+    <div class="form-section">
+      <form method="post" action="{{ url_for('predict') }}">
+        <div class="row g-3">
+
+          <!-- HighBP -->
+          <div class="col-md-6">
+            <label class="form-label">Do you have high blood pressure?</label>
+            <select name="HighBP" class="form-select">
+              <option value="0"
+                {% if request.form.get('HighBP') == '0' or not request.form.get('HighBP') %}selected{% endif %}>
+                No
+              </option>
+              <option value="1"
+                {% if request.form.get('HighBP') == '1' %}selected{% endif %}>
+                Yes
+              </option>
+            </select>
+          </div>
+
+          <!-- HighChol -->
+          <div class="col-md-6">
+            <label class="form-label">Do you have high cholesterol?</label>
+            <select name="HighChol" class="form-select">
+              <option value="0"
+                {% if request.form.get('HighChol') == '0' or not request.form.get('HighChol') %}selected{% endif %}>
+                No
+              </option>
+              <option value="1"
+                {% if request.form.get('HighChol') == '1' %}selected{% endif %}>
+                Yes
+              </option>
+            </select>
+          </div>
+
+          <!-- CholCheck -->
+          <div class="col-md-6">
+            <label class="form-label">Have you checked your cholesterol in the last 5 years?</label>
+            <select name="CholCheck" class="form-select">
+              <option value="0"
+                {% if request.form.get('CholCheck') == '0' or not request.form.get('CholCheck') %}selected{% endif %}>
+                No
+              </option>
+              <option value="1"
+                {% if request.form.get('CholCheck') == '1' %}selected{% endif %}>
+                Yes
+              </option>
+            </select>
+          </div>
+
+          <!-- BMI -->
+          <div class="col-md-6">
+            <label class="form-label" for="BMI">BMI (Body Mass Index)</label>
+            <input class="form-control"
+                   id="BMI"
+                   name="BMI"
+                   type="number"
+                   step="0.1"
+                   min="0"
+                   placeholder="e.g., 27.5"
+                   value="{{ request.form.get('BMI','') }}">
+            <div class="field-help">Numeric, e.g. 27.5</div>
+          </div>
+
+          <!-- Smoker -->
+          <div class="col-md-6">
+            <label class="form-label">Have you smoked at least 100 cigarettes in your entire life?</label>
+            <select name="Smoker" class="form-select">
+              <option value="0"
+                {% if request.form.get('Smoker') == '0' or not request.form.get('Smoker') %}selected{% endif %}>
+                No
+              </option>
+              <option value="1"
+                {% if request.form.get('Smoker') == '1' %}selected{% endif %}>
+                Yes
+              </option>
+            </select>
+          </div>
+
+          <!-- Stroke -->
+          <div class="col-md-6">
+            <label class="form-label">Have you ever had a stroke?</label>
+            <select name="Stroke" class="form-select">
+              <option value="0"
+                {% if request.form.get('Stroke') == '0' or not request.form.get('Stroke') %}selected{% endif %}>
+                No
+              </option>
+              <option value="1"
+                {% if request.form.get('Stroke') == '1' %}selected{% endif %}>
+                Yes
+              </option>
+            </select>
+          </div>
+
+          <!-- HeartDiseaseorAttack -->
+          <div class="col-md-6">
+            <label class="form-label">Have you ever had coronary heart disease or a heart attack?</label>
+            <select name="HeartDiseaseorAttack" class="form-select">
+              <option value="0"
+                {% if request.form.get('HeartDiseaseorAttack') == '0' or not request.form.get('HeartDiseaseorAttack') %}selected{% endif %}>
+                No
+              </option>
+              <option value="1"
+                {% if request.form.get('HeartDiseaseorAttack') == '1' %}selected{% endif %}>
+                Yes
+              </option>
+            </select>
+          </div>
+
+          <!-- PhysActivity -->
+          <div class="col-md-6">
+            <label class="form-label">Any physical activity (30+ minutes) in the past 30 days?</label>
+            <select name="PhysActivity" class="form-select">
+              <option value="0"
+                {% if request.form.get('PhysActivity') == '0' or not request.form.get('PhysActivity') %}selected{% endif %}>
+                No
+              </option>
+              <option value="1"
+                {% if request.form.get('PhysActivity') == '1' %}selected{% endif %}>
+                Yes
+              </option>
+            </select>
+          </div>
+
+          <!-- Fruits -->
+          <div class="col-md-6">
+            <label class="form-label">Do you eat fruits at least once per day?</label>
+            <select name="Fruits" class="form-select">
+              <option value="0"
+                {% if request.form.get('Fruits') == '0' or not request.form.get('Fruits') %}selected{% endif %}>
+                No
+              </option>
+              <option value="1"
+                {% if request.form.get('Fruits') == '1' %}selected{% endif %}>
+                Yes
+              </option>
+            </select>
+          </div>
+
+          <!-- Veggies -->
+          <div class="col-md-6">
+            <label class="form-label">Do you eat vegetables at least once per day?</label>
+            <select name="Veggies" class="form-select">
+              <option value="0"
+                {% if request.form.get('Veggies') == '0' or not request.form.get('Veggies') %}selected{% endif %}>
+                No
+              </option>
+              <option value="1"
+                {% if request.form.get('Veggies') == '1' %}selected{% endif %}>
+                Yes
+              </option>
+            </select>
+          </div>
+
+          <!-- HvyAlcoholConsump -->
+          <div class="col-md-6">
+            <label class="form-label">Heavy alcohol consumption?</label>
+            <select name="HvyAlcoholConsump" class="form-select">
+              <option value="0"
+                {% if request.form.get('HvyAlcoholConsump') == '0' or not request.form.get('HvyAlcoholConsump') %}selected{% endif %}>
+                No
+              </option>
+              <option value="1"
+                {% if request.form.get('HvyAlcoholConsump') == '1' %}selected{% endif %}>
+                Yes
+              </option>
+            </select>
+          </div>
+
+          <!-- AnyHealthcare -->
+          <div class="col-md-6">
+            <label class="form-label">Do you have any kind of health care coverage?</label>
+            <select name="AnyHealthcare" class="form-select">
+              <option value="0"
+                {% if request.form.get('AnyHealthcare') == '0' or not request.form.get('AnyHealthcare') %}selected{% endif %}>
+                No
+              </option>
+              <option value="1"
+                {% if request.form.get('AnyHealthcare') == '1' %}selected{% endif %}>
+                Yes
+              </option>
+            </select>
+          </div>
+
+          <!-- NoDocbcCost -->
+          <div class="col-md-6">
+            <label class="form-label">Was there a time you didn’t see a doctor because of cost?</label>
+            <select name="NoDocbcCost" class="form-select">
+              <option value="0"
+                {% if request.form.get('NoDocbcCost') == '0' or not request.form.get('NoDocbcCost') %}selected{% endif %}>
+                No
+              </option>
+              <option value="1"
+                {% if request.form.get('NoDocbcCost') == '1' %}selected{% endif %}>
+                Yes
+              </option>
+            </select>
+          </div>
+
+          <!-- GenHlth -->
+          <div class="col-md-6">
+            <label class="form-label">General health</label>
+            <select name="GenHlth" class="form-select" required>
+              <option value="">-- select --</option>
+              <option value="1" {% if request.form.get('GenHlth')=='1' %}selected{% endif %}>Excellent</option>
+              <option value="2" {% if request.form.get('GenHlth')=='2' %}selected{% endif %}>Very good</option>
+              <option value="3" {% if request.form.get('GenHlth')=='3' %}selected{% endif %}>Good</option>
+              <option value="4" {% if request.form.get('GenHlth')=='4' %}selected{% endif %}>Fair</option>
+              <option value="5" {% if request.form.get('GenHlth')=='5' %}selected{% endif %}>Poor</option>
+            </select>
+          </div>
+
+          <!-- MentHlth -->
+          <div class="col-md-6">
+            <label class="form-label">Days mental health not good (last 30 days)</label>
+            <input name="MentHlth"
+                   type="number"
+                   class="form-control"
+                   min="0" max="30" step="1"
+                   value="{{ request.form.get('MentHlth','') }}">
+          </div>
+
+          <!-- PhysHlth -->
+          <div class="col-md-6">
+            <label class="form-label">Days physical health not good (last 30 days)</label>
+            <input name="PhysHlth"
+                   type="number"
+                   class="form-control"
+                   min="0" max="30" step="1"
+                   value="{{ request.form.get('PhysHlth','') }}">
+          </div>
+
+          <!-- DiffWalk -->
+          <div class="col-md-6">
+            <label class="form-label">Serious difficulty walking or climbing stairs?</label>
+            <select name="DiffWalk" class="form-select">
+              <option value="0"
+                {% if request.form.get('DiffWalk') == '0' or not request.form.get('DiffWalk') %}selected{% endif %}>
+                No
+              </option>
+              <option value="1"
+                {% if request.form.get('DiffWalk') == '1' %}selected{% endif %}>
+                Yes
+              </option>
+            </select>
+          </div>
+
+          <!-- Sex -->
+          <div class="col-md-6">
+            <label class="form-label">Sex</label>
+            <select name="Sex" class="form-select">
+              <option value="0"
+                {% if request.form.get('Sex') == '0' or not request.form.get('Sex') %}selected{% endif %}>
+                Female
+              </option>
+              <option value="1"
+                {% if request.form.get('Sex') == '1' %}selected{% endif %}>
+                Male
+              </option>
+            </select>
+          </div>
+
+          <!-- Age -->
+          <div class="col-md-6">
+            <label class="form-label">Age category</label>
+            <select name="Age" class="form-select" required>
+              <option value="">-- select --</option>
+              <option value="1"  {% if request.form.get('Age')=='1'  %}selected{% endif %}>18–24</option>
+              <option value="2"  {% if request.form.get('Age')=='2'  %}selected{% endif %}>25–29</option>
+              <option value="3"  {% if request.form.get('Age')=='3'  %}selected{% endif %}>30–34</option>
+              <option value="4"  {% if request.form.get('Age')=='4'  %}selected{% endif %}>35–39</option>
+              <option value="5"  {% if request.form.get('Age')=='5'  %}selected{% endif %}>40–44</option>
+              <option value="6"  {% if request.form.get('Age')=='6'  %}selected{% endif %}>45–49</option>
+              <option value="7"  {% if request.form.get('Age')=='7'  %}selected{% endif %}>50–54</option>
+              <option value="8"  {% if request.form.get('Age')=='8'  %}selected{% endif %}>55–59</option>
+              <option value="9"  {% if request.form.get('Age')=='9'  %}selected{% endif %}>60–64</option>
+              <option value="10" {% if request.form.get('Age')=='10' %}selected{% endif %}>65–69</option>
+              <option value="11" {% if request.form.get('Age')=='11' %}selected{% endif %}>70–74</option>
+              <option value="12" {% if request.form.get('Age')=='12' %}selected{% endif %}>75–79</option>
+              <option value="13" {% if request.form.get('Age')=='13' %}selected{% endif %}>80+</option>
+            </select>
+          </div>
+
+          <!-- Education -->
+          <div class="col-md-6">
+            <label class="form-label">Education level</label>
+            <select name="Education" class="form-select" required>
+              <option value="">-- select --</option>
+              <option value="1" {% if request.form.get('Education')=='1' %}selected{% endif %}>
+                Never attended school / kindergarten only
+              </option>
+              <option value="2" {% if request.form.get('Education')=='2' %}selected{% endif %}>
+                Grades 1–8 (Elementary)
+              </option>
+              <option value="3" {% if request.form.get('Education')=='3' %}selected{% endif %}>
+                Grades 9–11 (Some high school)
+              </option>
+              <option value="4" {% if request.form.get('Education')=='4' %}selected{% endif %}>
+                Grade 12 or GED (High school graduate)
+              </option>
+              <option value="5" {% if request.form.get('Education')=='5' %}selected{% endif %}>
+                College 1–3 years (Some college / technical school)
+              </option>
+              <option value="6" {% if request.form.get('Education')=='6' %}selected{% endif %}>
+                College 4+ years (College graduate)
+              </option>
+            </select>
+          </div>
+
+          <!-- Income -->
+          <div class="col-md-6">
+            <label class="form-label">Household income (annual)</label>
+            <select name="Income" class="form-select" required>
+              <option value="">-- select --</option>
+              <option value="1" {% if request.form.get('Income')=='1' %}selected{% endif %}>
+                &lt; ₹10,000
+              </option>
+              <option value="2" {% if request.form.get('Income')=='2' %}selected{% endif %}>
+                ₹10,000 to &lt; ₹15,000
+              </option>
+              <option value="3" {% if request.form.get('Income')=='3' %}selected{% endif %}>
+                ₹15,000 to &lt; ₹20,000
+              </option>
+              <option value="4" {% if request.form.get('Income')=='4' %}selected{% endif %}>
+                ₹20,000 to &lt; ₹25,000
+              </option>
+              <option value="5" {% if request.form.get('Income')=='5' %}selected{% endif %}>
+                ₹25,000 to &lt; ₹35,000
+              </option>
+              <option value="6" {% if request.form.get('Income')=='6' %}selected{% endif %}>
+                ₹35,000 to &lt; ₹50,000
+              </option>
+              <option value="7" {% if request.form.get('Income')=='7' %}selected{% endif %}>
+                ₹50,000 to &lt; ₹75,000
+              </option>
+              <option value="8" {% if request.form.get('Income')=='8' %}selected{% endif %}>
+                ₹75,000 or more
+              </option>
+            </select>
+          </div>
+
+        </div>
+
+        <div class="d-flex gap-2 mt-4">
+          <button type="submit" class="btn btn-primary">Predict</button>
+          <button type="reset" class="btn btn-outline-secondary" onclick="resetForm()">Reset</button>  
+        </div>
+
+      </form>
+    </div>
+
+    <footer class="mt-4 text-muted small">
+      Note: This tool is for educational purposes and does not replace professional medical advice.
+    </footer>
+  </div>
+
+  <!-- Bootstrap JS (optional, for components) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
